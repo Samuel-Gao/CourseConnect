@@ -1,0 +1,36 @@
+<div class="container" ng-init="loadFriends()">
+	<div class="row">
+		<ul class="nav nav-tabs  nav-justified">
+  		<li><a href="#/userprofile">User Profile</a></li>
+  		<li><a href="#/courseenroll">Courses Enrolled</a></li>
+  		<li><a href="#/settings">Settings</a></li>
+		<li class="active"><a href="#/friends">Friends</a></li>
+  		</ul>
+	</div>
+	<h3>Your Friends</h3>
+	<table class="table">
+		<tr ng-repeat="friend in var_friends">
+			<td>
+				<img on-error-src="img/profilePicDefault.jpg" ng-src="{{ friend.fileLocation }}" alt="{{friend.FirstName}} {{friend.LastName}}" class="friendTablePic">
+			</td>
+			<td>{{friend.FirstName }} {{ friend.LastName }}</td>
+			<td>
+				<button ng-click="unfriend(friend.User2)" type="button" class="btn btn-danger"><i class="fa fa-user-times"></i> Unfriend</button>
+				<a ng-href="#private/{{friend.User2}}" type="button" class="btn btn-primary"><i class="fa fa-comments"></i> Chat</a>
+			</td>
+		</tr>
+	</table><br/>
+    <h3>Friend Requests</h3>
+    <table class="table">
+        <tr ng-repeat="friendreqs in var_reqfriends">
+            <td>
+                <img on-error-src="img/profilePicDefault.jpg" ng-src="{{ friendreqs.fileLocation }}" alt="{{friendreqs.FirstName}} {{friendreqs.LastName}}" class="friendTablePic">
+            </td>
+            <td>{{friendreqs.FirstName }} {{ friendreqs.LastName }}</td>
+            <td>
+                <button type="button" class="btn btn-success" ng-click="acceptRequest(friendreqs.User1)">Accept</button>
+                <button type="button" class="btn btn-danger" ng-click="declineRequest(friendreqs.User1)">Decline</button>
+            </td>
+        </tr>
+    </table>
+</div>

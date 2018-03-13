@@ -1,0 +1,42 @@
+{
+  "name": "course-connect",
+  "version": "0.0.1",
+  "authors": [
+    "Samuel Gao <samuel.gao3@gmail.com>"
+  ],
+  "description": "This is the final project for CSCC01-Software Engineering.",
+  "main": "server.js",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.3",
+    "Chart.StackedBar.js": "1.0.3",
+    "angular-route": "~1.4.3",
+    "angular-resource": "~1.4.3",
+    "angular-chart.js": "~0.7.3",
+    "bootstrap": "~3.3.5",
+    "jquery": "~2.1.4",
+    "Chart.js": "~1.0.2",
+    "fontawesome": "~4.4.0",
+    "highcharts-ng": "~0.0.11",
+    "highcharts": "~v4.2.1",
+    "Hover": "~2.0.2",
+    "angular-animate": "^1.4.3",  
+    "angular-bootstrap": "^2.5.0",
+    "ng-scroll-glue": "^2.0.10",
+    "angular-cookies":"^1.4.3",
+    "ng-tags-input":"^3.2.0"
+  },
+  "resolutions": {
+    "angular": "~1.4.3"
+  }
+}

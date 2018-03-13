@@ -1,0 +1,18 @@
+<div class="container" ng-app="CtrlCourseEnroll" ng-controller="CourseEnrollCtrl">
+	<ul class="nav nav-tabs nav-justified">
+		<li><a href="#/userprofile">User Profile</a></li>
+		<li class="active"><a href="#/courseenroll">Courses Enrolled</a></li>
+		<li><a href="#/settings">Settings</a></li>
+		<li><a href="#/friends">Friends</a></li>
+	</ul><br/>
+	<table class="table">
+		<tr ng-repeat="c in courses">
+			<td>{{c.CourseCode}}{{c.Semester}} - {{c.Year}}</td>
+			<td>
+				<a href="#/class/{{c.c_id}}"><button type="button" class="btn btn-success">Join Chatroom</button></a>
+				<a href={{c.instrEmail}}><button type="button" class="btn btn-info">Contact Instructor</button></a>
+				<button type="button" class="btn btn-danger" id="unenroll" ng-click="unenrollCourse(c.c_id)">Leave Course</button>
+			</td>
+		</tr>
+	</table>
+</div>

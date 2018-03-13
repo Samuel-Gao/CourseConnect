@@ -1,0 +1,48 @@
+<div class="container" ng-app="CtrlSettings" ng-controller="SettingsCtrl">
+	<ul class="nav nav-tabs nav-justified">
+		<li><a href="#/userprofile">User Profile</a></li>
+		<li><a href="#/courseenroll">Courses Enrolled</a></li>
+		<li class="active"><a href="#/settings">Settings</a></li>
+		<li><a href="#/friends">Friends</a></li>
+	</ul><br/>
+	<h3>Personal Information</h3><hr/>
+	<p><b>Display Name</b>: {{dispname}}<a id="dispname_toggle" style="float:right;" data-toggle="collapse" data-target="#changedispname">Change your display name</a></p>
+	<div id="changedispname" class="collapse">
+		<hr/>
+		<form>
+			<div class="form-group">
+				<label for="dispname">Enter your new display name:</label>
+    			<input type="text" class="form-control" id="dispname" ng-model="newDisplayName" placeholder={{dispname}} maxlength="30">
+			</div>
+			<button type="submit" class="btn btn-success" ng-click="changeDispName()">Submit</button>
+		</form>
+	</div>
+	<p><b>Description</b>: {{desc}}<a id="desc_toggle" style="float:right;" data-toggle="collapse" data-target="#editdescrip">Add/Edit Description</a></p>
+	<div id="editdescrip" class="collapse">
+		<hr/>
+		<form>
+			<div class="form-group">
+				<label for="description">Description:</label>
+				<textarea class="form-control" rows="5" id="description" ng-model="newDesc" placeholder={{desc}} maxlength="255"></textarea>
+			</div>
+			<button type="submit" class="btn btn-success" ng-click="changeDesc()">Submit</button>
+		</form>
+	</div>
+	<br/><br/><h3>Preferences</h3><hr/>
+	<br/><br/><h3>Feedback</h3>
+	<small>Give us some constructive feedback on our app!</small><hr/>
+	<button class="btn btn-warning" data-toggle="modal" data-target="#feedback">Give Feedback</button>
+	<div id="feedback" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Give Us Your Feedback!</h4>
+				</div>
+				<div class="modal-body">
+					BOO!
+				</duv>
+			</div>
+		</div>
+	</div>
+</div>

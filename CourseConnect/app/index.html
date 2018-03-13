@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html ng-app="courseConnect">
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="CourseConnect">
+    <link rel="icon" href="/img/favicon.ico">
+
+    <title>Course Connect</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/angular-chart.js/dist/angular-chart.css">
+    <link rel="stylesheet" href="/bower_components/fontawesome/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="/bower_components/Hover/css/hover-min.css" media="all">
+    <link rel="stylesheet" href="/bower_components/ng-tags-input/ng-tags-input.css">
+
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style-timeline.css">
+
+    <!-- Libraries -->
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/angular-route/angular-route.min.js"></script>
+    <script src="/bower_components/angular-resource/angular-resource.min.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/bower_components/Chart.js/Chart.min.js"></script>
+    <script src="/bower_components/angular-chart.js/dist/angular-chart.js"></script>
+    <script src="/bower_components/angular-animate/angular-animate.js"></script>
+    <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="/bower_components/ng-scroll-glue/dist/ng-scroll-glue.min.js"></script>
+    <script src="/bower_components/ng-tags-input/ng-tags-input.js"></script>
+     
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-cookies.js"></script>
+
+    <!--Controller-->
+    <script src="/js/controllers/ctrl-settings.js"></script>
+    <script src="/js/controllers/ctrl-userprofile.js"></script>
+    <script src="/js/controllers/ctrl-courseenrol.js"></script>
+	<script src="/js/controllers/ctrl-friends.js"></script>
+    <script src="/js/controllers/ctrl-index.js"></script>
+    <script src="/js/controllers/ctrl-chat.js"></script>
+    <script src="/js/controllers/ctrl-private.js"></script>
+    <script src="/js/controllers/ctrl-userlogin.js"></script>
+    <script src="/js/controllers/ctrl-usersignup.js"></script>
+	
+
+    <script src="/js/directives/directives.js"></script>
+    <script src="/js/filters/filters.js"></script>
+    <script src="/js/services/services.js"></script>
+    <script src="/js/tdPortal.js"></script>
+
+</head>
+
+<body>
+<!--Search Bar-->
+<!--<nav class="navbar navbar-inverse">-->
+
+<div ng-controller="IndexCtrl" >
+    <div id="registration" ng-model="mainNavbar">
+        <a href="#/login" ng-hide="var_logged_in">
+            <button id="loginbtn" class="btn btn-primary"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</button>
+        </a>
+        <a href="#/signup" ng-hide="var_logged_in">
+            <button id="signupbtn" class="btn btn-primary"><i class="fa fa-user-plus" aria-hidden="true"></i> SignUp</button>
+        </a>
+        <button ng-show="var_logged_in" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-bars" aria-hidden="true"></i>
+        <span class="caret"></span></button>
+        <ul class="dropdown-menu">
+            <li><a href="#/userprofile"><i class="fa fa-user" aria-hidden="true"></i> User Profile</a></li>
+            <li><a href="#/courseenroll"><i class="fa fa-forumbee" aria-hidden="true"></i> Courses Enrolled</a></li>
+            <li><a href="#/friends"><i class="fa fa-plus-circle" aria-hidden="true"></i> Friends</a></li>
+            <li class="divider"></li>
+            <li><a href="#/settings"><i class="fa fa-cog" aria-hidden="true"></i> Settings</a></li>
+        </ul>
+        <a ng-click="logout()" ng-show="var_logged_in">
+            <button id="logoutbtn" class="btn btn-danger"><i class="fa fa-sign-out" aria-hidden="true"></i> Log Out</button>
+        </a>
+    </div>
+    <form class="form-inline">
+        <!--Logo-->
+        <a class="form-group" id="logo" href="#/">
+            <img src="img/logo.png" alt="">
+        </a>
+        <!--Search Bar-->
+        <div class="form-group">
+            <label class="sr-only" for="courseCodeInput">Course Code</label>
+            <input type="courseCode" class="form-control" id="courseCodeInput" placeholder="Course Code" ng-model="var_course_code" maxlength="30" required>
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="semesterInput">Semester</label>
+            <select ng-model="var_semester" id="semesterInput" class="form-control">
+                <option value="F">Fall</option>
+                <option value="W">Winter</option>
+                <option value="S">Summer</option>
+                <option value="Y">Y Course</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="yearInput">Year</label>
+            <input type="text" class="form-control" id="yearInput" ng-model="var_date"
+                   is-open="var_year_picker_opened" ng-focus="openYearPicker($event)"
+                   uib-datepicker-popup="yyyy" datepicker-options="dateOptions" ng-required="true"
+                   close-text="Close" current-text="Current" />
+        </div>
+        <button type="submit" class="btn btn-default" ng-click="goToChatRoom()">Search</button>
+    </form>
+</div>
+
+<!-- Multiview container -->
+<div class="view-container">
+    <div ng-view class="view-frame"></div>
+</div>
+
+</body>
+</html>

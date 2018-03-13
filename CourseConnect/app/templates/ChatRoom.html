@@ -1,0 +1,438 @@
+<link rel="stylesheet" href="css/style-chat.css">
+<style>
+    body {
+        padding: 0 15px;
+    }
+</style>
+
+<div class="row container-fluid" ng-app="CtrlChat" ng-show="var_userValid">
+    <!--Padding Trick-->
+    <!--<div class="col-lg-1"></div>-->
+    <!--Chat Room-->
+    <div class="chat_room col-lg-12">
+        <div class="row">
+            <!--Left Section-->
+            <div class="col-lg-2">
+                <!--Forum Tabs-->
+                <div class="row">
+                    <div class="forum_tab">
+                        <input type="radio" id="forumChatRoom" ng-model="var_forum" value="chatroom">
+                        <label class="forum_tab" for="forumChatRoom">
+                            <img src="img/chatIcon.png" alt="Chat Room">
+                            <p ng-hide="var_forum == 'chatroom'">Chat Room</p>
+                            <p ng-show="var_forum == 'chatroom'" class="forum_name_selected">Chat Room</p>
+                        </label>
+                    </div>
+                    <div class="forum_tab" ng-click="loadPosts()">
+                        <input type="radio" id="forumPosts" ng-model="var_forum" value="posts">
+                        <label class="forum_tab" for="forumPosts">
+                            <img src="img/postIcon.png" alt="Posts">
+                            <p ng-hide="var_forum == 'posts'">Posts</p>
+                            <p ng-show="var_forum == 'posts'" class="forum_name_selected">Posts</p>
+                        </label>
+                    </div>
+                    <div class="forum_tab">
+                        <input type="radio" id="forumResources" ng-model="var_forum" value="resources">
+                        <label class="forum_tab" for="forumResources">
+                            <img src="img/fileSharingIcon.png" alt="Resources">
+                            <p ng-hide="var_forum == 'resources'">Resources</p>
+                            <p ng-show="var_forum == 'resources'" class="forum_name_selected">Resources</p>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <!--Posts-->
+                    <div ng-show="var_forum == 'posts'">
+                        <form>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#post_question_modal">Post Question!</button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search_post_modal">Search The Post</button>
+                            </div>
+                        </form>
+                        <hr>
+                        <ul class="list-group pre-scrollable">
+                            <li id="question_tiem" class="list-group-item" ng-repeat="post in postList" ng-click="displaySelectedPost(post)">
+                                <div class="content">
+                                    <div class="title">
+                                        <span class="glyphicon glyphicon-question-sign" style="color:red" ng-hide="post.solved == 'solved'"></span>
+                                        <span class="glyphicon glyphicon-ok-sign" style="color:lightgreen" ng-show="post.solved == 'solved'"></span>                                        {{post.Title}}
+                                    </div>
+                                    <div class="timestamp">{{post.postTime}}</div>
+                                    <div class="snipet">{{post.snipet}}</div>
+                                    <!--<div class="solve">{{<post></post>.solved}}</div>-->
+                                </div>
+                            </li>
+                        </ul>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+            <!--Middle Section-->
+            <div class="col-lg-8">
+                <!--Chat Room Name-->
+                <h1>{{ var_room_name }}</h1>
+
+                <!--Chat Room Content-->
+                <div class="chat_forum_content" ng-show="var_forum == 'chatroom'">
+                    <div class="chatbox" scroll-glue>
+                        <div class="chat_message row" ng-repeat="m in var_messages">
+                            <div class="left_avatar col-lg-1" title="{{ m.name }}">
+                                <div ng-hide="isCurrentUser(m.userId)">
+                                    <img on-error-src="img/profilePicDefault.jpg" ng-src="{{ m.name == 'Anonymous' ? 'img/profilePicDefault.jpg' : m.profilePic || 'img/profilePicDefault.jpg' }}" alt="{{ m.name }}" class="img-thumbnail">
+                                    <p>{{ m.name }}</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-10">
+                                <div ng-hide="isCurrentUser(m.userId)" class="left_message_box">
+                                    <p class="message_time">{{ m.time }}</p>
+                                    <p class="message_left">{{ m.message }}</p>
+                                </div>
+                                <div ng-show="isCurrentUser(m.userId)" class="right_message_box">
+                                    <p class="message_time">{{ m.time }}</p>
+                                    <p class="message_right">{{ m.message }}</p>
+                                </div>
+                            </div>
+                            <div class="right_avatar col-lg-1" title="{{ m.name }}">
+                                <div ng-show="isCurrentUser(m.userId)">
+                                    <img on-error-src="img/profilePicDefault.jpg" ng-src="{{ m.name == 'Anonymous' ? 'img/profilePicDefault.jpg' : m.profilePic || 'img/profilePicDefault.jpg' }}" alt="{{ m.name }}" class="img-thumbnail">
+                                    <p>{{ m.name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="text" class="chat_message_input" ng-model="var_chat_message" ng-keypress="onChatMessageKeyPress($event)" size="70"
+                    />
+                    <button type="button" class="btn btn-default" ng-click="sendMsg()">Send</button>
+                    <button type="button" class="btn btn-default" ng-click="sendMsgAnon()">Send Anonymously</button>
+                </div>
+
+                <!--Posts Content-->
+                <div class="chatbox" ng-show="var_forum == 'posts' && !selectedPost.po_id">
+                    <p>Select a Post in the left bar to view</p>
+                </div>
+                <div id="post_forum_content" ng-show="var_forum == 'posts' && selectedPost.po_id">
+                    <div id="post_forum_question">
+                        <h3 id="post_forum_title">{{selectedPost.Title}}</h3>
+                        <hr>
+                        <!--Question posted-->
+                        <div class="media">
+                            <div class="media-left">
+                                <img ng-src="{{ selectedPost.name == 'Anonymous' ? '/../img/img_avatar1.png' : selectedPost.fileLocation || '/../img/img_avatar1.png' }}" class="media-object" style="width:100px">
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">{{selectedPost.name}}
+                                    <p class="tag-post"> {{selectedPost.tag_name}} </p>
+                                </h4>
+                                <button type="button" class="btn btn-xs btn-danger float-right" data-toggle="modal" data-target="#modal{{selectedPost.po_id}}">Report</button>
+                                <div id="modal{{selectedPost.po_id}}" class="modal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Report Post As Inappropriate/Spam</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    <p style="color: red;">The content of the post will be automatically submitted with the contents
+                                                        of this form.</p>
+                                                    <div class="form-group">
+                                                        <label for="subject">Subject</label>
+                                                        <input type="text" class="form-control" id="subjectQ" ng-model="$parent.subject[selectedPost.po_id]" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="description">Description/Nature of Complaint</label>
+                                                        <textarea class="form-control" id="descriptionQ" ng-model="$parent.description[selectedPost.po_id]"></textarea>
+                                                    </div>
+                                                    <button type="submit" data-dismiss="modal" class="btn btn-warning" ng-click="submitReport(selectedPost)">Submit</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p>{{selectedPost.description}}</p>
+                                <h5>{{selectedPost.solved}}</h5>
+                                <!--<button type="button" class="btn btn-xs btn-primary float-right" ng-show="selectedPost.solved == 'solved'" data-toggle="modal" data-target="#display_solution" ng-click="displaySolution(selectedPost)">Show Solution</button>-->
+                            </div>
+                        </div>
+                    </div>
+                    <!--Posts Solution-->
+                    <div id="post_forum_solution" ng-show="selectedPost.solved == 'solved'">
+                        <h4 class="txt-left"> Adopted Solution</h4>
+                        <hr>
+                        <div class="media">
+                            <div class="media-left">
+                                <img ng-src="{{ solutionPost.name == 'Anonymous' ? '/../img/img_avatar1.png' : solutionPost.fileLocation || '/../img/img_avatar1.png' }}" class="media-object" style="width:100px">
+                            </div>
+                            <div class="media-body">
+                                <button type="button" class="btn btn-xs btn-danger float-right" ng-show="selectedPost.solution != NULL && selectedPost.solved =='solved'">Report</button>
+                                <button type="button" class="btn btn-xs btn-info float-right" ng-show="adoptButton && selectedPost.solved == 'solved' && selectedPost.solution != NULL"
+                                    ng-click="unAdoptFollowup(solutionPost, selectedPost, $event)" value="unadopt">Unadopt</button>
+                                <label>Writer:</label><br>
+                                <p>{{solutionPost.name}}</p>
+                                <hr>
+                                <form>
+                                    <div class="form-group">
+                                        <label for="comment" class="float-left">Content:</label>
+                                        <textarea class="form-control" rows="8" id="comment" readonly>{{solutionPost.description}}</textarea>
+                                    </div>
+                                </form>
+                                <!--<p>{{solutionPost.description}}</p>-->
+
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                    <!--Followup Section-->
+                    <div id="post_forum_answers">
+                        <div id="followupSection" class="pre-scrollable">
+                            <h4 class="txt-left"> Followup Discussion</h4>
+                            <hr>
+                            <!--Followups-->
+                            <div class="media" ng-repeat="followup in followupList">
+                                <div class="media-left">
+                                    <img ng-src="{{ followup.name == 'Anonymous' ? '/../img/img_avatar1.png' : followup.fileLocation || '/../img/img_avatar1.png' }}" class="media-object" style="width:100px">
+                                </div>
+                                <div class="media-body">
+
+                                    <!--<h4 class="media-heading">{{followup.FirstName}} {{followup.LastName}}
+                                        <button type="button" class="btn btn-xs btn-danger float-right">Report</button>
+                                        <button type="button" class="btn btn-xs btn-info float-right" ng-show="selectedPost.solved == 'unsolved' && selectedPost.solution != followup.po_id && adoptButton" ng-click="adoptFollowup(followup, selectedPost, $event)" value="adopt">Adopt</button>
+                                         <button type="button" class="btn btn-xs btn-info float-right" ng-show="selectedPost.solved == 'solved' && selectedPost.solution == followup.po_id && selectedPost.solution != NULL && adoptButton" ng-click="adoptFollowup(followup, selectedPost, $event)" value="unadopt">Unadopt</button>
+                                    </h4>-->
+
+                                    <h4 class="media-heading">{{followup.name}}</h4>
+                                    <button type="button" class="btn btn-xs btn-danger float-right" data-toggle="modal" data-target="#modal{{followup.po_id}}">Report</button>
+                                    <button type="button" class="btn btn-xs btn-info float-right" ng-show="selectedPost.solved == 'unsolved' && selectedPost.solution != followup.po_id && adoptButton"
+                                        ng-click="adoptFollowup(followup, selectedPost, $event)" value="adopt">Adopt</button>
+                                    <button type="button" class="btn btn-xs btn-info float-right" ng-show="selectedPost.solved == 'solved' && selectedPost.solution == followup.po_id && selectedPost.solution != NULL && adoptButton"
+                                        ng-click="adoptFollowup(followup, selectedPost, $event)" value="unadopt">Unadopt</button>
+
+                                    <div id="modal{{followup.po_id}}" class="modal">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Report Post As Inappropriate/Spam</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form>
+                                                        <p style="color: red;">The content of the post will be automatically submitted with the
+                                                            contents of this form.</p>
+                                                        <div class="form-group">
+                                                            <label for="subject">Subject</label>
+                                                            <input type="text" class="form-control" id="subject" ng-model="$parent.subject[followup.po_id]" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description">Description/Nature of Complaint</label>
+                                                            <textarea class="form-control" id="description" ng-model="$parent.description[followup.po_id]"></textarea>
+                                                        </div>
+                                                        <button type="submit" data-dismiss="modal" class="btn btn-warning" ng-click="submitReport(followup)">Submit</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p>{{followup.description}}</p>
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+
+                        <!--Input text-->
+                        <div class="form-group">
+                            <label for="followupTextInput">Start a new followup discussion.</label>
+                            <textarea id="followupTextInput" class="form-control" rows="5" ng-model="ques_followup"></textarea>
+                        </div>
+
+                        <!--Submit button-->
+                        <div>
+                            <button type="button" class="btn btn-info btn-s" ng-click="postFollowup(ques_followup, false)">Post</button>
+                            <button type="button" class="btn btn-info btn-s" ng-click="postFollowup(ques_followup, true)">Post as Anonymous</button>
+                            <button type="button" class="btn btn-primary btn-s" ng-click="backToPage()">Back</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Resource Sharing-->
+                <div class="chat_forum_content" ng-show="var_forum == 'resources'">
+                    <div class="resourcebox" scroll-glue>
+                        <table class="table">
+                            <tr ng-repeat="r in var_resources">
+                                <td>{{r.items}}</td>
+                                <td>
+                                    <a href={{r.address}} download>
+                                    <button type="button" class="btn btn-success">Download</button>
+                                    </a>
+                                    <button type="button" class="btn btn-info" ng-show="r.display" ng-click="deleteResource($event)" value="{{r.address}}">Delete</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!--<div class="container">-->
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input type="text" class="form-control" ng-model="var_search_info" size="60" />
+                                <button type="button" class="btn btn-primary" ng-click="displayResource()">Search</button>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">Upload File</button>
+                                <div id="uploadModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Upload The Selected File</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="uploadForm">
+                                                    <input type="file" class="form-control" file-model="userFile" id="studentFile" name="Upload File" size="70" />
+                                                    <button type="submit" class="btn-primary" ng-click="uploadFile()" data-dismiss="modal">Upload</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    <!--</div>-->
+                </div>
+            </div>
+
+            <!--Right Section-->
+            <div class="col-lg-2">
+                <!--Contact Prof-->
+                <button type="button" class="contact_prof_btn btn btn-primary" ng-click="directUnenrollment(var_course_id)">Drop {{ var_room_name }} </button>
+                <!--User List-->
+                <div class="user_list_wrapper">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Friends</div>
+                        <div class="panel-body">
+                            <div uib-popover-template="friendChatPopover.templateUrl" popover-trigger="'outsideClick'" popover-title="{{user.DisplayName || user.FirstName + ' ' + user.LastName }}"
+                                class="user_list" ng-repeat="user in var_user_list | filter: {'friend': 1}">
+                                <a class="user_card_li" href="" title="{{user.DisplayName || user.FirstName + ' ' + user.LastName }}">
+                                    <img on-error-src="img/profilePicDefault.jpg" ng-src="{{ user.fileLocation || 'img/profilePicDefault.jpg' }}" alt="{{user.DisplayName || user.FirstName + ' ' + user.LastName }}" class="img-thumbnail">
+                                    <p>{{user.DisplayName || user.FirstName + " " + user.LastName }}</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Classmates</div>
+                        <div class="panel-body">
+                            <div uib-popover-template="friendReqPopover.templateUrl" popover-trigger="'outsideClick'" popover-title="{{friendReqPopover.title}}"
+                                 class="user_list" ng-repeat="user in var_user_list | filter: {'friend': 0}">
+                                <a class="user_card_li" href="" title="{{user.DisplayName || user.FirstName + ' ' + user.LastName }}">
+                                    <img on-error-src="img/profilePicDefault.jpg" ng-src="{{ user.fileLocation || 'img/profilePicDefault.jpg' }}" alt="{{user.DisplayName || user.FirstName + ' ' + user.LastName }}" class="img-thumbnail">
+                                    <p>{{user.DisplayName || user.FirstName + " " + user.LastName }}</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Padding Trick-->
+    <!--<div class="col-lg-1"></div>-->
+</div>
+
+
+
+<!--Posting question form-->
+<div class="modal fade" id="post_question_modal" role="dialog">
+    <div class="modal-dialog">
+        <!--Header-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Post Question</h4>
+            </div>
+            <div class="modal-body">
+                <!--summary input-->
+                <div class="form-group">
+                    <!--<div class="row">
+                        <div ng-repeat="tag in postTagList" id="'tag'{{tag.tag_ID}}" class="col-md-2 tag" ng-click="selectTag(tag)"> {{tag.tag_name}}</div>
+                    </div>-->
+
+                    <!--Tags-->
+                    <div class="dropdown tag-float-box">
+                        <label>Tag: </label>
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" ng-model="tagSelected">{{tagSelected.tag_name}}<span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a ng-repeat="tag in postTagList" ng-click="selectTag(tag)">{{tag.tag_name}}</a></li>
+                        </ul>
+                    </div>
+
+                    <!--Add tag button-->
+                    <!--<div class="tag-float-box">
+                        <a> <span class="glyphicon glyphicon-plus"></span></a>
+                    </div>
+                    <br>
+                    <br>
+                    -->
+                    <div>
+                        <label for="post_ques_summary">Summary:</label>
+                        <input type="text" class="form-control" id="post_ques_summary" ng-model="ques_summary">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="post_ques_detail">Detail:</label>
+                    <textarea class="form-control" rows="5" id="post_ques_detail" ng-model="ques_detail"></textarea>
+                </div>
+                <!--<div class="form-group float-left">
+                	<form action="" class="form-inline">
+                		<div class="form-group">
+                			<input type="radio" name="solve" ng-model="solve" value="unsolved">Unsolved<br>
+                		</div>
+                		<div class="form-group">
+                			<input type="radio" name="solve" ng-model="solve" value="solved">Solved<br>
+                		</div>
+                	</form>
+                </div>-->
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="postQuestion(ques_summary, ques_detail, false)" data-dismiss="modal">Submit</button>
+                <button type="button" class="btn btn-success" ng-click="postQuestion(ques_summary, ques_detail, true)" data-dismiss="modal">Submit As Anonymous</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Search Question Form-->
+<div class="modal fade" id="search_post_modal" role="dialog">
+
+    <div class="modal-dialog">
+        <!--Header-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Search Question</h4>
+            </div>
+            <div class="modal-body">
+                <label>Key Word:</label>
+                <input type="text" class="form-control" ng-model="key">
+                <label>Name of Author:</label>
+                <input type="text" class="form-control" ng-model="writer">
+
+                <!--Tag Search-->
+                <label>Tag:</label>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" ng-model="filterTag">{{filterTag.tag_name}}<span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a ng-click="selectFilterTag({tag_name:'All Tag'})">All Tag</a></li>
+                        <li><a ng-repeat="tag in postTagList" ng-click="selectFilterTag(tag)">{{tag.tag_name}}</a></li>
+                    </ul>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="searchPost(key, writer)" data-dismiss="modal">Search</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>

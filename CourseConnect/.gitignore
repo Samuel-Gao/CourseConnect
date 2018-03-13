@@ -1,0 +1,7 @@
+# Ignore NPM dependencies
+node_modules/*
+*/bower_components/*
+npm-debug.log
+.idea/
+.vscode/
+*.iml

@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="alert alert-danger alert-dismissable" id="FailedAlert">
+        <button type="button" class="close" data-hide="alert">&times;</button>
+        <strong>Signup Failed!</strong> Your account has already been enrolled.
+    </div>
+    <div class="alert alert-danger alert-dismissable" id="MatchingPwd">
+        <button type="button" class="close" data-hide="alert">&times;</button>
+        <strong>Signup Failed!</strong> The password you re-entered does not match the original one.
+    </div>
+</div>
+<div class="container" ng-app="CtrlUserSignup" ng-controller="SignUpCtrl">
+    <div class="row">
+        <p><i style="color: red;" class="fa fa-asterisk" aria-hidden="true"></i> mandatory fields</p>
+        <div class="col-md-6">
+            <form>
+                <div class="form-group">
+                    <label for="userName">UserName (Your Email Address)<i style="color: red;" class="fa fa-asterisk" aria-hidden="true"></i></label>
+                    <input id="userNameInput" class="form-control" type="UserName" ng-model="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="FirstName">First Name<i style="color: red;" class="fa fa-asterisk" aria-hidden="true"></i></label>
+                    <input id="firstNameInput" class="form-control" type="firstName" ng-model="firstName" maxlength="15" required>
+                    <label for="LastName">Last Name<i style="color: red;" class="fa fa-asterisk" aria-hidden="true"></i></label>
+                    <input id="lastNameInput" class="form-control" type="lastName" ng-model="lastName" maxlength="15" required>
+                    <label for="UTorid">UTorid</label>
+                    <input id="utoridInput" class="form-control" type="UTorid" ng-model="utorid" maxlength="10">
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form>
+                <div class="form-group">
+                    <label for="password">Password<i style="color: red;" class="fa fa-asterisk" aria-hidden="true"></i></label>
+                    <input id="passwordInput" class="form-control" type="passWord" ng-model="password" maxlength="10" required>
+                </div>
+                <div class="form-group">
+                    <label for="rePassword">Re-enter Password<i style="color: red;" class="fa fa-asterisk" aria-hidden="true"></i></label>
+                    <input id="rePasswordInput" class="form-control" type="PassWord" ng-model="repassword" maxlength="10" required>
+                </div>
+            </form>
+        </div>
+    </div>
+    <form>
+        <button class="btn btn-default" type="submit" ng-click="signup()">Register</button>
+    </form>
+    <p><strong>Note:</strong> You have to fill out all the blank above in this page except for UTorid.</p>
+
+    <p>We highly recommend you to enter your email assigned by University of Toronto so we can better connect you with
+        your courses.</p>
+
+    <p>After you finish all your information, you can click "Register" button to continue.</p>
+</div>
